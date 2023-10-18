@@ -1,20 +1,16 @@
 import express from 'express';
 import cors from 'cors';
+import { User } from './types';
+import { UsersController } from './controllers/users.controller';
 
-const PORT = 443;
+const PORT = 5000;
 const app = express();
 
 const CLIENT_ORIGIN = 'http://localhost:3000';
 
 app.use(cors({
   origin: CLIENT_ORIGIN,
-}))
-
-const users = [
-  { id: 1, name: 'Joe Biden', carColorId: 5 },
-  { id: 2, name: 'Elon Musk', carColorId: 4 },
-  { id: 3, name: 'Pan Roman', carColorId: 2 },
-];
+}));
 
 const colors = [
   { id: 1, name: 'Black' },
@@ -30,23 +26,11 @@ app.get('/', (req, res) => {
   res.end('Hello, world');
 });
 
-app.get('/users', (req, res) => {
-  res.send(users);
-});
+app.get('/users', UsersController.getAll);
 
-app.get('/users/:userId', (req, res) => {
-  const {userId} = req.params;
+app.post('/users', express.json(), UsersController.create);
 
-  const user = users.find(({ id }) => id === +userId);
-
-  if (!user) {
-    res.sendStatus(404);
-
-    return;
-  }
-
-  res.send(user);
-});
+app.get('/users/:userId', UsersController.getById);
 
 app.get('/colors', (req, res) => {
   res.send(colors);
